@@ -47,6 +47,13 @@ class LTLTests {
 	}
 
 	@Example
+	void notChecker() {
+		StateChecker notA = not(fact("a"));
+		assertThat(notA.check(atoms("b", "c"))).isTrue();
+		assertThat(notA.check(atoms("b", "a"))).isFalse();
+	}
+
+	@Example
 	void alwaysDoesNotMatch() {
 		LTL ltl = new LTL();
 		ltl.addFormula(

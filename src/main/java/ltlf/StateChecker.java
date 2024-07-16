@@ -5,6 +5,10 @@ public interface StateChecker {
 		return new Fact(a);
 	}
 
+	static StateChecker not(StateChecker checker) {
+		return state -> !checker.check(state);
+	}
+
 	boolean check(LTLState state);
 
 	class Fact implements StateChecker {
