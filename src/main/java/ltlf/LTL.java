@@ -1,7 +1,7 @@
 package ltlf;
 
 public class LTL {
-	public boolean check() {
-		return false;
+	public boolean check(LTLState ... trace) {
+		return true;
 	}
 }
