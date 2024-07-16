@@ -31,7 +31,7 @@ class LTLTests {
 	}
 
 	@Example
-	void alwaysFormula() {
+	void alwaysMatches() {
 		LTL ltl = new LTL();
 		ltl.addFormula(
 			always(fact("a"))
@@ -44,6 +44,22 @@ class LTLTests {
 		);
 
 		assertThat(matches).isTrue();
+	}
+
+	@Example
+	void alwaysDoesNotMatch() {
+		LTL ltl = new LTL();
+		ltl.addFormula(
+			always(fact("b"))
+		);
+
+		boolean matches = ltl.matches(
+			atoms("a", "b", "c"),
+			atoms("a", "b"),
+			atoms("a")
+		);
+
+		assertThat(matches).isFalse();
 	}
 
 }
