@@ -11,6 +11,14 @@ public interface StateChecker {
 
 	boolean check(LTLState state);
 
+	default StateChecker and(StateChecker other) {
+		return state -> check(state) && other.check(state);
+	}
+
+	default StateChecker or(StateChecker other) {
+		return state -> check(state) || other.check(state);
+	}
+
 	class Fact implements StateChecker {
 		private final String atom;
 

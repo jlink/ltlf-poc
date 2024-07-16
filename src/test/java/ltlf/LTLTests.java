@@ -54,6 +54,20 @@ class LTLTests {
 	}
 
 	@Example
+	void andChecker() {
+		StateChecker aAndB = fact("a").and(fact("b"));
+		assertThat(aAndB.check(atoms("b", "a"))).isTrue();
+		assertThat(aAndB.check(atoms("b", "x"))).isFalse();
+	}
+
+	@Example
+	void orChecker() {
+		StateChecker aOrB = fact("a").or(fact("b"));
+		assertThat(aOrB.check(atoms("b", "x"))).isTrue();
+		assertThat(aOrB.check(atoms("y", "x"))).isFalse();
+	}
+
+	@Example
 	void alwaysDoesNotMatch() {
 		LTL ltl = new LTL();
 		ltl.addFormula(
