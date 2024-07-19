@@ -18,13 +18,6 @@ class FormulaCheckingTests {
 	}
 
 	@Example
-	void and() {
-		LTLFormula aAndB = fact("a").and(fact("b"));
-		assertThat(aAndB.check(atoms("b", "a"))).isTrue();
-		assertThat(aAndB.check(atoms("b", "x"))).isFalse();
-	}
-
-	@Example
 	void or() {
 		LTLFormula aOrB = fact("a").or(fact("b"));
 		assertThat(aOrB.check(atoms("b", "x"))).isTrue();
@@ -76,6 +69,42 @@ class FormulaCheckingTests {
 				atoms("x")
 			))).isFalse();
 		}
+
+	}
+
+	@Group
+	class And {
+
+		@Example
+		void factAndFact() {
+			LTLFormula aAndB = fact("a").and(fact("b"));
+			assertThat(aAndB.check(atoms("b", "a"))).isTrue();
+			assertThat(aAndB.check(atoms("b", "x"))).isFalse();
+		}
+
+		@Example
+		void factAndNext() {
+			LTLFormula aAndThenB = fact("a").and(next(fact("b")));
+
+			assertThat(aAndThenB.check(LTLTrace.of(
+				atoms("b", "a"),
+				atoms("b"),
+				atoms("a")
+			))).isTrue();
+
+			assertThat(aAndThenB.check(LTLTrace.of(
+				atoms("b"),
+				atoms("b"),
+				atoms("a")
+			))).isFalse();
+
+			assertThat(aAndThenB.check(LTLTrace.of(
+				atoms("a", "b"),
+				atoms("a"),
+				atoms("b")
+			))).isFalse();
+		}
+
 
 	}
 
