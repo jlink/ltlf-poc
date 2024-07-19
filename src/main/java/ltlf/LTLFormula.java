@@ -1,23 +1,66 @@
 package ltlf;
 
-public interface LTLFormula extends TraceChecker {
+public interface LTLFormula {
 
-	static LTLFormula always(TraceChecker checker) {
+	boolean check(LTLTrace trace);
+
+	default boolean check(LTLState state) {
+		return check(LTLTrace.of(state));
+	}
+
+	default LTLFormula and(LTLFormula other) {
+		return state -> check(state) && other.check(state);
+	}
+
+	default LTLFormula or(LTLFormula other) {
+		return state -> check(state) || other.check(state);
+	}
+
+	default LTLFormula implies(LTLFormula other) {
+		return state -> !check(state) || other.check(state);
+	}
+
+	static LTLFormula fact(String a) {
+		return new Fact(a);
+	}
+
+	static LTLFormula not(LTLFormula checker) {
+		return state -> !checker.check(state);
+	}
+
+	static LTLFormula always(LTLFormula checker) {
 		return new Always(checker);
 	}
 
-	static LTLFormula next(TraceChecker checker) {
+	static LTLFormula next(LTLFormula checker) {
 		return trace -> checker.check(trace.rest());
 	}
 
-	static LTLFormula eventually(TraceChecker checker) {
+	static LTLFormula eventually(LTLFormula checker) {
 		return new Eventually(checker);
 	}
 
-	class Eventually implements LTLFormula {
-		private final TraceChecker checker;
+	class Fact implements LTLFormula {
+		private final String atom;
 
-		public Eventually(TraceChecker checker) {
+		public Fact(String atom) {
+			this.atom = atom.trim().toLowerCase();
+		}
+
+		@Override
+		public boolean check(LTLTrace trace) {
+			if (trace.isEmpty()) {
+				return true;
+			}
+			var first = trace.states().getFirst();
+			return first.contains(atom);
+		}
+	}
+
+	class Eventually implements LTLFormula {
+		private final LTLFormula checker;
+
+		public Eventually(LTLFormula checker) {
 			this.checker = checker;
 		}
 
@@ -36,9 +79,9 @@ public interface LTLFormula extends TraceChecker {
 	}
 
 	class Always implements LTLFormula {
-		private final TraceChecker checker;
+		private final LTLFormula checker;
 
-		public Always(TraceChecker checker) {
+		public Always(LTLFormula checker) {
 			this.checker = checker;
 		}
 
