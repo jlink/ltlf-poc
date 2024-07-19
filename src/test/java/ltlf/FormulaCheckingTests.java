@@ -7,13 +7,14 @@ import static ltlf.LTLState.*;
 import static org.assertj.core.api.Assertions.*;
 
 @Group
-class TraceCheckingTests {
+class FormulaCheckingTests {
 
 	@Example
-	void notOperator() {
-		LTLFormula notA = not(fact("a"));
-		assertThat(notA.check(atoms("b", "c"))).isTrue();
-		assertThat(notA.check(atoms("b", "a"))).isFalse();
+	void facts() {
+		assertThat(fact("a").check(atoms("a"))).isTrue();
+		assertThat(fact("a").check(atoms("x", "a", "y"))).isTrue();
+		assertThat(fact("a").check(atoms("x", "y"))).isFalse();
+		assertThat(fact("a").check(atoms())).isFalse();
 	}
 
 	@Example
@@ -36,6 +37,46 @@ class TraceCheckingTests {
 		assertThat(aOrB.check(atoms("c", "x"))).isTrue();
 		assertThat(aOrB.check(atoms("a", "x", "b"))).isTrue();
 		assertThat(aOrB.check(atoms("a"))).isFalse();
+	}
+
+	@Group
+	class Not {
+
+		@Example
+		void notAFact() {
+			LTLFormula notA = not(fact("a"));
+			assertThat(notA.check(atoms("b", "c"))).isTrue();
+			assertThat(notA.check(atoms("b", "a"))).isFalse();
+		}
+
+		@Example
+		void notAlways() {
+			LTLFormula notAlwaysA = not(always(fact("a")));
+			assertThat(notAlwaysA.check(LTLTrace.of(
+				atoms("b", "a"),
+				atoms("b", "c")
+			))).isTrue();
+			assertThat(notAlwaysA.check(LTLTrace.of(
+				atoms("b", "a"),
+				atoms("b", "a"),
+				atoms("a")
+			))).isFalse();
+		}
+
+		@Example
+		void notNext() {
+			LTLFormula notNext = not(next(fact("a")));
+			assertThat(notNext.check(LTLTrace.of(
+				atoms("b", "a"),
+				atoms("b", "c")
+			))).isTrue();
+			assertThat(notNext.check(LTLTrace.of(
+				atoms("b"),
+				atoms("b", "a"),
+				atoms("x")
+			))).isFalse();
+		}
+
 	}
 
 	@Group
