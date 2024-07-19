@@ -7,6 +7,10 @@ public record LTLTrace(List<LTLState> states) {
 		return new LTLTrace(List.of(states));
 	}
 
+	public LTLTrace rest() {
+		return new LTLTrace(states().subList(1, states().size()));
+	}
+
 	public boolean isEmpty() {
 		return states().isEmpty();
 	}

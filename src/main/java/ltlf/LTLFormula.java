@@ -15,12 +15,16 @@ public interface LTLFormula extends TraceChecker {
 
 		@Override
 		public boolean check(LTLTrace trace) {
-			for (LTLState state : trace.states()) {
-				if (!checker.check(LTLTrace.of(state))) {
+			LTLTrace current = trace;
+			while (!current.isEmpty()) {
+				if (!checker.check(current)) {
 					return false;
 				}
+				current = current.rest();
 			}
+
 			return true;
 		}
+
 	}
 }

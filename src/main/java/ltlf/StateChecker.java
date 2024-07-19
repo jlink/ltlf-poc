@@ -6,7 +6,7 @@ public interface StateChecker extends TraceChecker {
 	}
 
 	static StateChecker not(StateChecker checker) {
-		return state -> !checker.checkState(state);
+		return state -> !checker.check(state);
 	}
 
 	@Override
@@ -14,21 +14,21 @@ public interface StateChecker extends TraceChecker {
 		if (trace.isEmpty()) {
 			return true;
 		}
-		return checkState(trace.states().getFirst());
+		return check(trace.states().getFirst());
 	}
 
-	boolean checkState(LTLState state);
+	boolean check(LTLState state);
 
 	default StateChecker and(StateChecker other) {
-		return state -> checkState(state) && other.checkState(state);
+		return state -> check(state) && other.check(state);
 	}
 
 	default StateChecker or(StateChecker other) {
-		return state -> checkState(state) || other.checkState(state);
+		return state -> check(state) || other.check(state);
 	}
 
 	default StateChecker implies(StateChecker other) {
-		return state -> !checkState(state) || other.checkState(state);
+		return state -> !check(state) || other.check(state);
 	}
 
 	class Fact implements StateChecker {
@@ -39,7 +39,7 @@ public interface StateChecker extends TraceChecker {
 		}
 
 		@Override
-		public boolean checkState(LTLState state) {
+		public boolean check(LTLState state) {
 			return state.contains(atom);
 		}
 	}
