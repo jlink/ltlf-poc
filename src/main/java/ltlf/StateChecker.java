@@ -19,6 +19,10 @@ public interface StateChecker {
 		return state -> check(state) || other.check(state);
 	}
 
+	default StateChecker implies(StateChecker other) {
+		return state -> !check(state) || other.check(state);
+	}
+
 	class Fact implements StateChecker {
 		private final String atom;
 
