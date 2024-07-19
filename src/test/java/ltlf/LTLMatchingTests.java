@@ -2,32 +2,23 @@ package ltlf;
 
 import net.jqwik.api.*;
 
-import static ltlf.LTLState.*;
-import static ltlf.StateChecker.*;
 import static ltlf.LTLFormula.*;
+import static ltlf.LTLState.*;
 import static org.assertj.core.api.Assertions.*;
 
 class LTLMatchingTests {
 
 	@Example
-	void matchEmptyTrace() {
-		LTL ltl = new LTL();
-		boolean matches = ltl.matches();
-
-		assertThat(matches).isTrue();
-	}
-
-	@Example
-	void matchNoFormulae() {
+	void anyTraceMatchesNoFormulae() {
 		LTL ltl = new LTL();
 
-		boolean matches = ltl.matches(
+		assertThat(ltl.matches(
 			atoms("a", "b", "c"),
 			atoms("a", "b"),
 			atoms("a")
-		);
+		)).isTrue();
 
-		assertThat(matches).isTrue();
+		assertThat(ltl.matches()).isTrue();
 	}
 
 	@Example
@@ -37,8 +28,8 @@ class LTLMatchingTests {
 			always(fact("a"))
 		);
 
-		boolean matches = ltl.matches(atoms("a"), atoms("a", "b"));
-		assertThat(matches).isTrue();
+		assertThat(ltl.matches(atoms("a"), atoms("a", "b"))).isTrue();
+		assertThat(ltl.matches()).isTrue();
 	}
 
 	@Example
@@ -50,6 +41,46 @@ class LTLMatchingTests {
 
 		boolean matches = ltl.matches(atoms("a", "b", "c"), atoms("a"));
 		assertThat(matches).isFalse();
+	}
+
+	@Example
+	void matchSeveralFormulae() {
+		LTL ltl = new LTL();
+		ltl.addFormula(always(fact("a")));
+		ltl.addFormula(fact("b"));
+		ltl.addFormula(eventually(fact("c")));
+
+		assertThat(ltl.matches(
+			atoms("a", "b"),
+			atoms("a"),
+			atoms("a"),
+			atoms("c", "a"),
+			atoms("a")
+		)).isTrue();
+
+		assertThat(ltl.matches(
+			atoms("a"),
+			atoms("a"),
+			atoms("a"),
+			atoms("c", "a"),
+			atoms("a")
+		)).isFalse();
+
+		assertThat(ltl.matches(
+			atoms("b"),
+			atoms("a"),
+			atoms("a"),
+			atoms("c", "a"),
+			atoms("a")
+		)).isFalse();
+
+		assertThat(ltl.matches(
+			atoms("a", "b"),
+			atoms("a"),
+			atoms("a"),
+			atoms("a"),
+			atoms("a")
+		)).isFalse();
 	}
 
 }
