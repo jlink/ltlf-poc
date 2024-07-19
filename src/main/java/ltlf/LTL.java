@@ -15,7 +15,7 @@ import java.util.*;
  */
 public class LTL {
 
-	private final Set<TraceChecker> formulae = new LinkedHashSet<>();
+	private final Set<LTLFormula> formulae = new LinkedHashSet<>();
 
 	public boolean matches(LTLState... trace) {
 		return matches(new LTLTrace(Arrays.asList(trace)));
@@ -25,7 +25,7 @@ public class LTL {
 		return formulae.stream().allMatch(f -> f.check(trace));
 	}
 
-	public void addFormula(TraceChecker formula) {
+	public void addFormula(LTLFormula formula) {
 		formulae.add(formula);
 	}
 }

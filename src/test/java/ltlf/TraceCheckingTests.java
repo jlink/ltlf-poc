@@ -4,7 +4,7 @@ import net.jqwik.api.*;
 
 import static ltlf.LTLState.*;
 import static ltlf.StateChecker.*;
-import static ltlf.TraceChecker.*;
+import static ltlf.LTLFormula.*;
 import static org.assertj.core.api.Assertions.*;
 
 class TraceCheckingTests {
