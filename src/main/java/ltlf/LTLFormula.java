@@ -6,6 +6,10 @@ public interface LTLFormula extends TraceChecker {
 		return new Always(checker);
 	}
 
+	static LTLFormula next(TraceChecker checker) {
+		return trace -> checker.check(trace.rest());
+	}
+
 	class Always implements LTLFormula {
 		private final TraceChecker checker;
 
@@ -25,6 +29,6 @@ public interface LTLFormula extends TraceChecker {
 
 			return true;
 		}
-
 	}
+
 }
