@@ -10,6 +10,31 @@ public interface LTLFormula extends TraceChecker {
 		return trace -> checker.check(trace.rest());
 	}
 
+	static LTLFormula eventually(TraceChecker checker) {
+		return new Eventually(checker);
+	}
+
+	class Eventually implements LTLFormula {
+		private final TraceChecker checker;
+
+		public Eventually(TraceChecker checker) {
+			this.checker = checker;
+		}
+
+		@Override
+		public boolean check(LTLTrace trace) {
+			LTLTrace current = trace;
+			while (!current.isEmpty()) {
+				if (checker.check(current)) {
+					return true;
+				}
+				current = current.rest();
+			}
+
+			return false;
+		}
+	}
+
 	class Always implements LTLFormula {
 		private final TraceChecker checker;
 

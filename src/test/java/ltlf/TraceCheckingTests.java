@@ -57,6 +57,64 @@ class TraceCheckingTests {
 	}
 
 	@Group
+	class Eventually {
+
+		@Example
+		void matches() {
+			var eventually = eventually(fact("a"));
+
+			assertThat(eventually.check(LTLTrace.of(
+				atoms("c"),
+				atoms("a", "b"),
+				atoms("b")
+			))).isTrue();
+
+			assertThat(eventually.check(LTLTrace.of(
+				atoms("c"),
+				atoms("c"),
+				atoms(),
+				atoms("c"),
+				atoms(),
+				atoms("a", "b")
+			))).isTrue();
+		}
+
+		@Example
+		void doesNotMatch() {
+			var eventually = eventually(fact("a"));
+
+			assertThat(eventually.check(LTLTrace.of(
+				atoms("c"),
+				atoms("b"),
+				atoms(),
+				atoms("b")
+			))).isFalse();
+
+			assertThat(eventually.check(LTLTrace.of())).isFalse();
+		}
+
+		@Example
+		void nested() {
+			var eventually = eventually(always(fact("a")));
+
+			assertThat(eventually.check(LTLTrace.of(
+				atoms("c"),
+				atoms(),
+				atoms("a", "b"),
+				atoms("a")
+			))).isTrue();
+
+			assertThat(eventually.check(LTLTrace.of(
+				atoms("c"),
+				atoms("a", "b"),
+				atoms("a"),
+				atoms()
+			))).isFalse();
+		}
+
+	}
+
+	@Group
 	class Always {
 
 		@Example
