@@ -33,4 +33,16 @@ class TraceCheckingTests {
 		assertThat(matches).isFalse();
 	}
 
+	@Example
+	void nestedAlways() {
+		var always = always(always(fact("a")));
+		boolean matches = always.check(LTLTrace.of(
+			atoms("a", "b", "c"),
+			atoms("a", "b"),
+			atoms("a")
+		));
+
+		assertThat(matches).isTrue();
+	}
+
 }
