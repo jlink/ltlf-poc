@@ -2,12 +2,12 @@ package ltlf;
 
 import net.jqwik.api.*;
 
-import static ltlf.StateChecker.*;
-import static ltlf.LTLFormula.*;
 import static ltlf.LTLState.*;
+import static ltlf.StateChecker.*;
+import static ltlf.TraceChecker.*;
 import static org.assertj.core.api.Assertions.*;
 
-class MatchingTests {
+class LTLMatchingTests {
 
 	@Example
 	void matchEmptyTrace() {
@@ -37,12 +37,7 @@ class MatchingTests {
 			always(fact("a"))
 		);
 
-		boolean matches = ltl.matches(
-			atoms("a", "b", "c"),
-			atoms("a", "b"),
-			atoms("a")
-		);
-
+		boolean matches = ltl.matches(atoms("a"), atoms("a", "b"));
 		assertThat(matches).isTrue();
 	}
 
@@ -53,12 +48,7 @@ class MatchingTests {
 			always(fact("b"))
 		);
 
-		boolean matches = ltl.matches(
-			atoms("a", "b", "c"),
-			atoms("a", "b"),
-			atoms("a")
-		);
-
+		boolean matches = ltl.matches(atoms("a", "b", "c"), atoms("a"));
 		assertThat(matches).isFalse();
 	}
 

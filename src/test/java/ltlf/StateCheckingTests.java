@@ -2,13 +2,12 @@ package ltlf;
 
 import net.jqwik.api.*;
 
-import static ltlf.LTLFormula.*;
 import static ltlf.LTLState.*;
 import static ltlf.StateChecker.not;
 import static ltlf.StateChecker.*;
 import static org.assertj.core.api.Assertions.*;
 
-class CheckerTests {
+class StateCheckingTests {
 
 	@Example
 	void notOperator() {

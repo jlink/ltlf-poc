@@ -1,14 +1,14 @@
 package ltlf;
 
-public interface LTLFormula {
+public interface TraceChecker {
 
-	static LTLFormula always(StateChecker checker) {
+	static TraceChecker always(StateChecker checker) {
 		return new Always(checker);
 	}
 
-	boolean matches(LTLTrace trace);
+	boolean check(LTLTrace trace);
 
-	class Always implements LTLFormula {
+	class Always implements TraceChecker {
 		private final StateChecker checker;
 
 		public Always(StateChecker checker) {
@@ -16,7 +16,7 @@ public interface LTLFormula {
 		}
 
 		@Override
-		public boolean matches(LTLTrace trace) {
+		public boolean check(LTLTrace trace) {
 			for (LTLState state : trace.states()) {
 				if (!checker.check(state)) {
 					return false;
