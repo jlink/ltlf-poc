@@ -18,13 +18,6 @@ class FormulaCheckingTests {
 	}
 
 	@Example
-	void or() {
-		LTLFormula aOrB = fact("a").or(fact("b"));
-		assertThat(aOrB.check(atoms("b", "x"))).isTrue();
-		assertThat(aOrB.check(atoms("y", "x"))).isFalse();
-	}
-
-	@Example
 	void implies() {
 		LTLFormula aOrB = fact("a").implies(fact("b"));
 		assertThat(aOrB.check(atoms("c", "x"))).isTrue();
@@ -105,7 +98,40 @@ class FormulaCheckingTests {
 			))).isFalse();
 		}
 
+	}
 
+	@Group
+	class Or {
+
+		@Example
+		void factOrFact() {
+			LTLFormula aOrB = fact("a").or(fact("b"));
+			assertThat(aOrB.check(atoms("b", "x"))).isTrue();
+			assertThat(aOrB.check(atoms("y", "x"))).isFalse();
+		}
+
+		@Example
+		void factOrNext() {
+			LTLFormula aOrNextB = fact("a").or(next(fact("b")));
+
+			assertThat(aOrNextB.check(LTLTrace.of(
+				atoms("b", "a"),
+				atoms("c"),
+				atoms("a")
+			))).isTrue();
+
+			assertThat(aOrNextB.check(LTLTrace.of(
+				atoms("b"),
+				atoms("b"),
+				atoms("x")
+			))).isTrue();
+
+			assertThat(aOrNextB.check(LTLTrace.of(
+				atoms("b"),
+				atoms("a"),
+				atoms("c")
+			))).isFalse();
+		}
 	}
 
 	@Group
