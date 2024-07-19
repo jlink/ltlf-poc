@@ -17,14 +17,6 @@ class FormulaCheckingTests {
 		assertThat(fact("a").check(atoms())).isFalse();
 	}
 
-	@Example
-	void implies() {
-		LTLFormula aOrB = fact("a").implies(fact("b"));
-		assertThat(aOrB.check(atoms("c", "x"))).isTrue();
-		assertThat(aOrB.check(atoms("a", "x", "b"))).isTrue();
-		assertThat(aOrB.check(atoms("a"))).isFalse();
-	}
-
 	@Group
 	class Not {
 
@@ -132,6 +124,43 @@ class FormulaCheckingTests {
 				atoms("c")
 			))).isFalse();
 		}
+	}
+
+	@Group
+	class Implies {
+
+		@Example
+		void factImpliesFact() {
+			LTLFormula aImpliesB = fact("a").implies(fact("b"));
+			assertThat(aImpliesB.check(atoms("c", "x"))).isTrue();
+			assertThat(aImpliesB.check(atoms("a", "x", "b"))).isTrue();
+			assertThat(aImpliesB.check(atoms("a"))).isFalse();
+		}
+
+		@Example
+		void factImpliesNext() {
+			LTLFormula aImpliesNextB = fact("a").implies(next(fact("b")));
+
+			assertThat(aImpliesNextB.check(LTLTrace.of(
+				atoms("c"),
+				atoms("c", "a"),
+				atoms("b")
+			))).isTrue();
+
+			assertThat(aImpliesNextB.check(LTLTrace.of(
+				atoms("a"),
+				atoms("b", "a"),
+				atoms("b")
+			))).isTrue();
+
+			assertThat(aImpliesNextB.check(LTLTrace.of(
+				atoms("a"),
+				atoms("a"),
+				atoms("b")
+			))).isFalse();
+		}
+
+
 	}
 
 	@Group
