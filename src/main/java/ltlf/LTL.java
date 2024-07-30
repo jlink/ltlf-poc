@@ -4,6 +4,7 @@ import java.util.*;
 
 /**
  * A Linear Temporal Logic (LTL) system with finite semantics.
+ * See https://www.cs.rice.edu/~vardi/papers/ijcai13.pdf
  *
  * <p>
  *     Finite semantics means that only finite traces are considered.
