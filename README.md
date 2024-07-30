@@ -17,6 +17,7 @@ The goal is to eventually provide something like [Quickstrom](https://quickstrom
 - [x] eventually
 - [x] next
 - [ ] until
+- [ ] last
 - [ ] Property-based tests for LTL
 - [ ] Make LTLFormula generic (by any state type)
 - [ ] Provide mismatching details in case of failed match
