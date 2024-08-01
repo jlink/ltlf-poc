@@ -44,6 +44,22 @@ class FormulaCheckingTests {
 				atoms("a"),
 				atoms("a"),
 				atoms("a"),
+				atoms("b")
+			))).isTrue();
+
+			assertThat(aUntilB.check(LTLTrace.of(
+				atoms("x"),
+				atoms("x"),
+				atoms("a"),
+				atoms("a"),
+				atoms("b")
+			))).isTrue();
+
+			assertThat(aUntilB.check(LTLTrace.of(
+				atoms("a"),
+				atoms("a"),
+				atoms("a"),
+				atoms("a"),
 				atoms("b"),
 				atoms("x")
 			))).isTrue();
@@ -63,18 +79,9 @@ class FormulaCheckingTests {
 			))).isTrue();
 
 			assertThat(aUntilB.check(LTLTrace.of(
-				atoms("b")
-			))).isTrue();
-
-			assertThat(aUntilB.check(LTLTrace.of(
 				atoms("a")
 			))).isTrue();
 
-			assertThat(aUntilB.check(LTLTrace.of(
-				atoms("b")
-			))).isTrue();
-
-			assertThat(aUntilB.check(LTLTrace.of())).isTrue();
 		}
 
 		@Example
@@ -92,9 +99,16 @@ class FormulaCheckingTests {
 				atoms("x"),
 				atoms("a"),
 				atoms("a"),
+				atoms("x"),
+				atoms("a"),
 				atoms("b")
 			))).isFalse();
 
+			assertThat(aUntilB.check(LTLTrace.of(
+				atoms("b")
+			))).isFalse();
+
+			assertThat(aUntilB.check(LTLTrace.of())).isFalse();
 		}
 	}
 
