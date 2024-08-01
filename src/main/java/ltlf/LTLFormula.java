@@ -54,6 +54,10 @@ public interface LTLFormula {
 		};
 	}
 
+	default LTLFormula until(LTLFormula condition) {
+		return new Until(this, condition);
+	}
+
 	class Fact implements LTLFormula {
 		private final String atom;
 
@@ -113,4 +117,23 @@ public interface LTLFormula {
 		}
 	}
 
+	class Until implements LTLFormula {
+		private final LTLFormula hold;
+		private final LTLFormula until;
+
+		public Until(LTLFormula hold, LTLFormula until) {
+			this.hold = hold;
+			this.until = until;
+		}
+
+		@Override
+		public boolean check(LTLTrace trace) {
+			if (trace.isEmpty()) {
+				return true;
+			}
+			return until.check(trace) ||
+					   (hold.check(trace) &&
+						   hold.until(until).check(trace.rest()));
+		}
+	}
 }

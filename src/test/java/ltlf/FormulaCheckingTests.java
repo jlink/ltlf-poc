@@ -33,6 +33,72 @@ class FormulaCheckingTests {
 	}
 
 	@Group
+	class Until {
+
+		@Example
+		void holds() {
+			LTLFormula aUntilB = fact("a").until(fact("b"));
+
+			assertThat(aUntilB.check(LTLTrace.of(
+				atoms("a"),
+				atoms("a"),
+				atoms("a"),
+				atoms("a"),
+				atoms("b"),
+				atoms("x")
+			))).isTrue();
+
+			assertThat(aUntilB.check(LTLTrace.of(
+				atoms("a"),
+				atoms("a"),
+				atoms("a"),
+				atoms("a"),
+				atoms("b", "a"),
+				atoms("x")
+			))).isTrue();
+
+			assertThat(aUntilB.check(LTLTrace.of(
+				atoms("a"),
+				atoms("b")
+			))).isTrue();
+
+			assertThat(aUntilB.check(LTLTrace.of(
+				atoms("b")
+			))).isTrue();
+
+			assertThat(aUntilB.check(LTLTrace.of(
+				atoms("a")
+			))).isTrue();
+
+			assertThat(aUntilB.check(LTLTrace.of(
+				atoms("b")
+			))).isTrue();
+
+			assertThat(aUntilB.check(LTLTrace.of())).isTrue();
+		}
+
+		@Example
+		void doesNotHold() {
+			LTLFormula aUntilB = fact("a").until(fact("b"));
+
+			assertThat(aUntilB.check(LTLTrace.of(
+				atoms("a"),
+				atoms("a"),
+				atoms("a"),
+				atoms("x")
+			))).isFalse();
+
+			assertThat(aUntilB.check(LTLTrace.of(
+				atoms("x"),
+				atoms("a"),
+				atoms("a"),
+				atoms("b")
+			))).isFalse();
+
+		}
+	}
+
+	@Group
 	class Not {
 
 		@Example
