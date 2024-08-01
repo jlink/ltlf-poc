@@ -24,4 +24,9 @@ public class LTLState {
 	public boolean contains(String atom) {
 		return atoms.contains(atom);
 	}
+
+	@Override
+	public String toString() {
+		return atoms.toString();
+	}
 }

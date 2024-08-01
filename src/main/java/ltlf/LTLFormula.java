@@ -64,7 +64,7 @@ public interface LTLFormula {
 		@Override
 		public boolean check(LTLTrace trace) {
 			if (trace.isEmpty()) {
-				return true;
+				return false;
 			}
 			var first = trace.states().getFirst();
 			return first.contains(atom);

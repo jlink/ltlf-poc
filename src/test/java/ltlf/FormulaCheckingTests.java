@@ -16,6 +16,7 @@ class FormulaCheckingTests {
 		assertThat(fact("a").check(atoms("x", "a", "y"))).isTrue();
 		assertThat(fact("a").check(atoms("x", "y"))).isFalse();
 		assertThat(fact("a").check(atoms())).isFalse();
+		assertThat(fact("a").check(LTLTrace.of())).isFalse();
 	}
 
 	@Example
@@ -218,6 +219,37 @@ class FormulaCheckingTests {
 				atoms("c"),
 				atoms("a", "b"),
 				atoms("b")
+			))).isFalse();
+		}
+
+		@Example
+		void withPrecondition() {
+			var ifPreThenNext = fact("pre").implies(next(fact("next")));
+
+			assertThat(ifPreThenNext.check(LTLTrace.of(
+				atoms("pre"),
+				atoms("a", "next"),
+				atoms("a")
+			))).isTrue();
+
+			assertThat(ifPreThenNext.check(LTLTrace.of(
+				atoms("a"),
+				atoms("a")
+			))).isTrue();
+
+			assertThat(ifPreThenNext.check(LTLTrace.of(
+				atoms("pre"),
+				atoms("a")
+			))).isFalse();
+
+			assertThat(ifPreThenNext.check(LTLTrace.of(
+				atoms("pre")
+			))).isFalse();
+
+			assertThat(always(ifPreThenNext).check(LTLTrace.of(
+				atoms("pre"),
+				atoms("a", "next", "pre"),
+				atoms("a")
 			))).isFalse();
 		}
 
