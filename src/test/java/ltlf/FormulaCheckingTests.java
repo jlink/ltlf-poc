@@ -48,14 +48,6 @@ class FormulaCheckingTests {
 			))).isTrue();
 
 			assertThat(aUntilB.check(LTLTrace.of(
-				atoms("x"),
-				atoms("x"),
-				atoms("a"),
-				atoms("a"),
-				atoms("b")
-			))).isTrue();
-
-			assertThat(aUntilB.check(LTLTrace.of(
 				atoms("a"),
 				atoms("a"),
 				atoms("a"),
@@ -98,8 +90,6 @@ class FormulaCheckingTests {
 			assertThat(aUntilB.check(LTLTrace.of(
 				atoms("x"),
 				atoms("a"),
-				atoms("a"),
-				atoms("x"),
 				atoms("a"),
 				atoms("b")
 			))).isFalse();

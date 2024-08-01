@@ -126,21 +126,16 @@ public interface LTLFormula {
 			this.until = until;
 		}
 
-		@SuppressWarnings("OverlyComplexMethod")
 		@Override
 		public boolean check(LTLTrace trace) {
-			if (trace.isEmpty()) {
+			if (trace.isEmpty() || !hold.check(trace)) {
 				return false;
 			}
 
 			LTLTrace rest = trace.rest();
-			if (hold.check(trace)) {
-				return rest.isEmpty()
-						   || until.check(rest)
-						   || (hold.check(rest) && check(rest));
-			} else {
-				return check(rest);
-			}
+			return rest.isEmpty()
+					   || until.check(rest)
+					   || check(rest);
 		}
 	}
 }
