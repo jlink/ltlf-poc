@@ -2,6 +2,7 @@ package ltlf;
 
 import net.jqwik.api.*;
 
+import static ltlf.LTLFormula.not;
 import static ltlf.LTLFormula.*;
 import static ltlf.LTLState.*;
 import static org.assertj.core.api.Assertions.*;
@@ -15,6 +16,19 @@ class FormulaCheckingTests {
 		assertThat(fact("a").check(atoms("x", "a", "y"))).isTrue();
 		assertThat(fact("a").check(atoms("x", "y"))).isFalse();
 		assertThat(fact("a").check(atoms())).isFalse();
+	}
+
+	@Example
+	void lastFormula() {
+		assertThat(last(fact("a")).check(LTLTrace.of(
+			atoms("a"),
+			atoms("a")
+		))).isTrue();
+		assertThat(last(fact("a")).check(LTLTrace.of(
+			atoms("a"),
+			atoms("b")
+		))).isFalse();
+		assertThat(last(fact("a")).check(LTLTrace.of())).isFalse();
 	}
 
 	@Group
@@ -160,7 +174,6 @@ class FormulaCheckingTests {
 			))).isFalse();
 		}
 
-
 	}
 
 	@Group
@@ -181,13 +194,14 @@ class FormulaCheckingTests {
 		@Example
 		void doesNotMatch() {
 			var next = next(fact("b"));
-			boolean matches = next.check(LTLTrace.of(
+
+			assertThat(next.check(LTLTrace.of(
 				atoms("a", "b", "c"),
 				atoms("a"),
 				atoms("a", "b")
-			));
+			))).isFalse();
 
-			assertThat(matches).isFalse();
+			assertThat(next.check(LTLTrace.of())).isFalse();
 		}
 
 		@Example

@@ -33,11 +33,25 @@ public interface LTLFormula {
 	}
 
 	static LTLFormula next(LTLFormula checker) {
-		return trace -> checker.check(trace.rest());
+		return trace -> {
+			if (trace.isEmpty()) {
+				return false;
+			}
+			return checker.check(trace.rest());
+		};
 	}
 
 	static LTLFormula eventually(LTLFormula checker) {
 		return new Eventually(checker);
+	}
+
+	static LTLFormula last(LTLFormula checker) {
+		return trace -> {
+			if (trace.isEmpty()) {
+				return false;
+			}
+			return checker.check(trace.getLast());
+		};
 	}
 
 	class Fact implements LTLFormula {

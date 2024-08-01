@@ -14,4 +14,8 @@ public record LTLTrace(List<LTLState> states) {
 	public boolean isEmpty() {
 		return states().isEmpty();
 	}
+
+	public LTLState getLast() {
+		return states.getLast();
+	}
 }

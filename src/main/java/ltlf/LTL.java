@@ -10,9 +10,9 @@ import java.util.*;
  *     Finite semantics means that only finite traces are considered.
  *     - `Always` holds when it holds in all states of the trace.
  *     - `Eventually` holds when it holds in at least one state of the trace.
- *     - `Next` does not require that a next state even exists.
- *     - `Until` does not require that the second formula ever holds.
+ *     - `Next` does require that a next state exists.
  *     - `Last` does require that the last state exists.
+ *     - `Until` does not require that the second formula ever holds.
  * </p>
  */
 public class LTL {
