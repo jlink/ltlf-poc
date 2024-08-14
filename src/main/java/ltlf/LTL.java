@@ -24,7 +24,7 @@ public class LTL {
 	}
 
 	public boolean matches(LTLTrace trace) {
-		return formulae.stream().allMatch(f -> f.check(trace));
+		return formulae.stream().allMatch(f -> f.validate(trace));
 	}
 
 	public void addFormula(LTLFormula formula) {

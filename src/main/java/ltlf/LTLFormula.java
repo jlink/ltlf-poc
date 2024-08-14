@@ -2,22 +2,22 @@ package ltlf;
 
 public interface LTLFormula {
 
-	boolean check(LTLTrace trace);
+	boolean validate(LTLTrace trace);
 
-	default boolean check(LTLState state) {
-		return check(LTLTrace.of(state));
+	default boolean validate(LTLState state) {
+		return validate(LTLTrace.of(state));
 	}
 
 	default LTLFormula and(LTLFormula other) {
-		return state -> check(state) && other.check(state);
+		return state -> validate(state) && other.validate(state);
 	}
 
 	default LTLFormula or(LTLFormula other) {
-		return state -> check(state) || other.check(state);
+		return state -> validate(state) || other.validate(state);
 	}
 
 	default LTLFormula implies(LTLFormula other) {
-		return state -> !check(state) || other.check(state);
+		return state -> !validate(state) || other.validate(state);
 	}
 
 	static LTLFormula fact(String a) {
@@ -25,7 +25,7 @@ public interface LTLFormula {
 	}
 
 	static LTLFormula not(LTLFormula checker) {
-		return state -> !checker.check(state);
+		return state -> !checker.validate(state);
 	}
 
 	static LTLFormula always(LTLFormula checker) {
@@ -37,7 +37,7 @@ public interface LTLFormula {
 			if (trace.isEmpty()) {
 				return false;
 			}
-			return checker.check(trace.rest());
+			return checker.validate(trace.rest());
 		};
 	}
 
@@ -50,7 +50,7 @@ public interface LTLFormula {
 			if (trace.isEmpty()) {
 				return false;
 			}
-			return checker.check(trace.getLast());
+			return checker.validate(trace.getLast());
 		};
 	}
 
@@ -66,7 +66,7 @@ public interface LTLFormula {
 		}
 
 		@Override
-		public boolean check(LTLTrace trace) {
+		public boolean validate(LTLTrace trace) {
 			if (trace.isEmpty()) {
 				return false;
 			}
@@ -83,10 +83,10 @@ public interface LTLFormula {
 		}
 
 		@Override
-		public boolean check(LTLTrace trace) {
+		public boolean validate(LTLTrace trace) {
 			LTLTrace current = trace;
 			while (!current.isEmpty()) {
-				if (checker.check(current)) {
+				if (checker.validate(current)) {
 					return true;
 				}
 				current = current.rest();
@@ -104,10 +104,10 @@ public interface LTLFormula {
 		}
 
 		@Override
-		public boolean check(LTLTrace trace) {
+		public boolean validate(LTLTrace trace) {
 			LTLTrace current = trace;
 			while (!current.isEmpty()) {
-				if (!checker.check(current)) {
+				if (!checker.validate(current)) {
 					return false;
 				}
 				current = current.rest();
@@ -127,15 +127,15 @@ public interface LTLFormula {
 		}
 
 		@Override
-		public boolean check(LTLTrace trace) {
-			if (trace.isEmpty() || !hold.check(trace)) {
+		public boolean validate(LTLTrace trace) {
+			if (trace.isEmpty() || !hold.validate(trace)) {
 				return false;
 			}
 
 			LTLTrace rest = trace.rest();
 			return rest.isEmpty()
-					   || until.check(rest)
-					   || check(rest);
+					   || until.validate(rest)
+					   || validate(rest);
 		}
 	}
 }
