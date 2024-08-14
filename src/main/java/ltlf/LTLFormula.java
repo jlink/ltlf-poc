@@ -61,14 +61,14 @@ public interface LTLFormula<S> {
 	@FunctionalInterface
 	interface Fact<S> extends LTLFormula<S> {
 
-		boolean check(LTLState<S> state);
+		boolean check(S state);
 
 		default boolean validate(LTLTrace<S> trace) {
 			if (trace.isEmpty()) {
 				return false;
 			}
 			LTLState<S> first = trace.states().getFirst();
-			return check(first);
+			return check(first.state());
 		}
 	}
 

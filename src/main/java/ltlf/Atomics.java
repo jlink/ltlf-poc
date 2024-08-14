@@ -32,8 +32,8 @@ public class Atomics {
 		}
 
 		@Override
-		public boolean check(LTLState<Set<String>> state) {
-			return state.state().contains(atom);
+		public boolean check(Set<String> state) {
+			return state.contains(atom);
 		}
 	}
 }
