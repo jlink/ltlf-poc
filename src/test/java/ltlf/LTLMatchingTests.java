@@ -1,5 +1,7 @@
 package ltlf;
 
+import java.util.*;
+
 import net.jqwik.api.*;
 
 import static ltlf.LTLFormula.*;
@@ -10,7 +12,7 @@ class LTLMatchingTests {
 
 	@Example
 	void anyTraceMatchesNoFormulae() {
-		LTL ltl = new LTL();
+		LTL<Set<String>> ltl = new LTL<>();
 
 		assertThat(ltl.matches(
 			atoms("a", "b", "c"),
@@ -23,7 +25,7 @@ class LTLMatchingTests {
 
 	@Example
 	void alwaysMatches() {
-		LTL ltl = new LTL();
+		LTL<Set<String>> ltl = new LTL<>();
 		ltl.addFormula(
 			always(AtomicFact.fact("a"))
 		);
@@ -34,7 +36,7 @@ class LTLMatchingTests {
 
 	@Example
 	void alwaysDoesNotMatch() {
-		LTL ltl = new LTL();
+		LTL<Set<String>> ltl = new LTL<>();
 		ltl.addFormula(
 			always(AtomicFact.fact("b"))
 		);
@@ -45,7 +47,7 @@ class LTLMatchingTests {
 
 	@Example
 	void matchSeveralFormulae() {
-		LTL ltl = new LTL();
+		LTL<Set<String>> ltl = new LTL<>();
 		ltl.addFormula(always(AtomicFact.fact("a")));
 		ltl.addFormula(AtomicFact.fact("b"));
 		ltl.addFormula(eventually(AtomicFact.fact("c")));

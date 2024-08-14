@@ -4,7 +4,7 @@ import java.util.*;
 
 /**
  * A Linear Temporal Logic (LTL) system with finite semantics.
- * See https://www.cs.rice.edu/~vardi/papers/ijcai13.pdf
+ * See <a href="https://www.cs.rice.edu/~vardi/papers/ijcai13.pdf">LTLf</a>
  *
  * <p>
  *     Finite semantics means that only finite traces are considered.
@@ -15,19 +15,20 @@ import java.util.*;
  *     - `Until` does not require that the second formula ever holds.
  * </p>
  */
-public class LTL {
+public class LTL<S> {
 
-	private final Set<LTLFormula> formulae = new LinkedHashSet<>();
+	private final Set<LTLFormula<S>> formulae = new LinkedHashSet<>();
 
-	public boolean matches(LTLState... trace) {
-		return matches(new LTLTrace(Arrays.asList(trace)));
+	@SafeVarargs
+	public final boolean matches(LTLState<S>... trace) {
+		return matches(new LTLTrace<>(Arrays.asList(trace)));
 	}
 
-	public boolean matches(LTLTrace trace) {
+	public boolean matches(LTLTrace<S> trace) {
 		return formulae.stream().allMatch(f -> f.validate(trace));
 	}
 
-	public void addFormula(LTLFormula formula) {
+	public void addFormula(LTLFormula<S> formula) {
 		formulae.add(formula);
 	}
 }
