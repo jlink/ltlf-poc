@@ -6,7 +6,6 @@ import net.jqwik.api.*;
 
 import static ltlf.LTLFormula.not;
 import static ltlf.LTLFormula.*;
-import static ltlf.LTLState.*;
 import static org.assertj.core.api.Assertions.*;
 
 @Group
@@ -14,24 +13,24 @@ class FormulaValidationTests {
 
 	@Example
 	void facts() {
-		assertThat(AtomicFact.fact("a").validate(atoms("a"))).isTrue();
-		assertThat(AtomicFact.fact("a").validate(atoms("x", "a", "y"))).isTrue();
-		assertThat(AtomicFact.fact("a").validate(atoms("x", "y"))).isFalse();
-		assertThat(AtomicFact.fact("a").validate(atoms())).isFalse();
-		assertThat(AtomicFact.fact("a").validate(LTLTrace.of())).isFalse();
+		assertThat(Atomics.fact("a").validate(Atomics.state("a"))).isTrue();
+		assertThat(Atomics.fact("a").validate(Atomics.state("x", "a", "y"))).isTrue();
+		assertThat(Atomics.fact("a").validate(Atomics.state("x", "y"))).isFalse();
+		assertThat(Atomics.fact("a").validate(Atomics.state())).isFalse();
+		assertThat(Atomics.fact("a").validate(LTLTrace.of())).isFalse();
 	}
 
 	@Example
 	void lastFormula() {
-		assertThat(last(AtomicFact.fact("a")).validate(LTLTrace.of(
-			atoms("a"),
-			atoms("a")
+		assertThat(last(Atomics.fact("a")).validate(LTLTrace.of(
+			Atomics.state("a"),
+			Atomics.state("a")
 		))).isTrue();
-		assertThat(last(AtomicFact.fact("a")).validate(LTLTrace.of(
-			atoms("a"),
-			atoms("b")
+		assertThat(last(Atomics.fact("a")).validate(LTLTrace.of(
+			Atomics.state("a"),
+			Atomics.state("b")
 		))).isFalse();
-		assertThat(last(AtomicFact.fact("a")).validate(LTLTrace.of())).isFalse();
+		assertThat(last(Atomics.fact("a")).validate(LTLTrace.of())).isFalse();
 	}
 
 	@Group
@@ -39,65 +38,65 @@ class FormulaValidationTests {
 
 		@Example
 		void holds() {
-			LTLFormula<Set<String>> aUntilB = AtomicFact.fact("a").until(AtomicFact.fact("b"));
+			LTLFormula<Set<String>> aUntilB = Atomics.fact("a").until(Atomics.fact("b"));
 
 			assertThat(aUntilB.validate(LTLTrace.of(
-				atoms("a"),
-				atoms("a"),
-				atoms("a"),
-				atoms("a"),
-				atoms("b")
+				Atomics.state("a"),
+				Atomics.state("a"),
+				Atomics.state("a"),
+				Atomics.state("a"),
+				Atomics.state("b")
 			))).isTrue();
 
 			assertThat(aUntilB.validate(LTLTrace.of(
-				atoms("a"),
-				atoms("a"),
-				atoms("a"),
-				atoms("a"),
-				atoms("b"),
-				atoms("x")
+				Atomics.state("a"),
+				Atomics.state("a"),
+				Atomics.state("a"),
+				Atomics.state("a"),
+				Atomics.state("b"),
+				Atomics.state("x")
 			))).isTrue();
 
 			assertThat(aUntilB.validate(LTLTrace.of(
-				atoms("a"),
-				atoms("a"),
-				atoms("a"),
-				atoms("a"),
-				atoms("b", "a"),
-				atoms("x")
+				Atomics.state("a"),
+				Atomics.state("a"),
+				Atomics.state("a"),
+				Atomics.state("a"),
+				Atomics.state("b", "a"),
+				Atomics.state("x")
 			))).isTrue();
 
 			assertThat(aUntilB.validate(LTLTrace.of(
-				atoms("a"),
-				atoms("b")
+				Atomics.state("a"),
+				Atomics.state("b")
 			))).isTrue();
 
 			assertThat(aUntilB.validate(LTLTrace.of(
-				atoms("a")
+				Atomics.state("a")
 			))).isTrue();
 
 		}
 
 		@Example
 		void doesNotHold() {
-			LTLFormula<Set<String>> aUntilB = AtomicFact.fact("a").until(AtomicFact.fact("b"));
+			LTLFormula<Set<String>> aUntilB = Atomics.fact("a").until(Atomics.fact("b"));
 
 			assertThat(aUntilB.validate(LTLTrace.of(
-				atoms("a"),
-				atoms("a"),
-				atoms("a"),
-				atoms("x")
+				Atomics.state("a"),
+				Atomics.state("a"),
+				Atomics.state("a"),
+				Atomics.state("x")
 			))).isFalse();
 
 			assertThat(aUntilB.validate(LTLTrace.of(
-				atoms("x"),
-				atoms("a"),
-				atoms("a"),
-				atoms("b")
+				Atomics.state("x"),
+				Atomics.state("a"),
+				Atomics.state("a"),
+				Atomics.state("b")
 			))).isFalse();
 
 			assertThat(aUntilB.validate(LTLTrace.of(
-				atoms("b")
+				Atomics.state("b")
 			))).isFalse();
 
 			assertThat(aUntilB.validate(LTLTrace.of())).isFalse();
@@ -109,36 +108,36 @@ class FormulaValidationTests {
 
 		@Example
 		void notAFact() {
-			LTLFormula<Set<String>> notA = not(AtomicFact.fact("a"));
-			assertThat(notA.validate(atoms("b", "c"))).isTrue();
-			assertThat(notA.validate(atoms("b", "a"))).isFalse();
+			LTLFormula<Set<String>> notA = not(Atomics.fact("a"));
+			assertThat(notA.validate(Atomics.state("b", "c"))).isTrue();
+			assertThat(notA.validate(Atomics.state("b", "a"))).isFalse();
 		}
 
 		@Example
 		void notAlways() {
-			LTLFormula<Set<String>> notAlwaysA = not(always(AtomicFact.fact("a")));
+			LTLFormula<Set<String>> notAlwaysA = not(always(Atomics.fact("a")));
 			assertThat(notAlwaysA.validate(LTLTrace.of(
-				atoms("b", "a"),
-				atoms("b", "c")
+				Atomics.state("b", "a"),
+				Atomics.state("b", "c")
 			))).isTrue();
 			assertThat(notAlwaysA.validate(LTLTrace.of(
-				atoms("b", "a"),
-				atoms("b", "a"),
-				atoms("a")
+				Atomics.state("b", "a"),
+				Atomics.state("b", "a"),
+				Atomics.state("a")
 			))).isFalse();
 		}
 
 		@Example
 		void notNext() {
-			LTLFormula<Set<String>> notNext = not(next(AtomicFact.fact("a")));
+			LTLFormula<Set<String>> notNext = not(next(Atomics.fact("a")));
 			assertThat(notNext.validate(LTLTrace.of(
-				atoms("b", "a"),
-				atoms("b", "c")
+				Atomics.state("b", "a"),
+				Atomics.state("b", "c")
 			))).isTrue();
 			assertThat(notNext.validate(LTLTrace.of(
-				atoms("b"),
-				atoms("b", "a"),
-				atoms("x")
+				Atomics.state("b"),
+				Atomics.state("b", "a"),
+				Atomics.state("x")
 			))).isFalse();
 		}
 
@@ -149,31 +148,31 @@ class FormulaValidationTests {
 
 		@Example
 		void factAndFact() {
-			LTLFormula<Set<String>> aAndB = AtomicFact.fact("a").and(AtomicFact.fact("b"));
-			assertThat(aAndB.validate(atoms("b", "a"))).isTrue();
-			assertThat(aAndB.validate(atoms("b", "x"))).isFalse();
+			LTLFormula<Set<String>> aAndB = Atomics.fact("a").and(Atomics.fact("b"));
+			assertThat(aAndB.validate(Atomics.state("b", "a"))).isTrue();
+			assertThat(aAndB.validate(Atomics.state("b", "x"))).isFalse();
 		}
 
 		@Example
 		void factAndNext() {
-			LTLFormula<Set<String>> aAndThenB = AtomicFact.fact("a").and(next(AtomicFact.fact("b")));
+			LTLFormula<Set<String>> aAndThenB = Atomics.fact("a").and(next(Atomics.fact("b")));
 
 			assertThat(aAndThenB.validate(LTLTrace.of(
-				atoms("b", "a"),
-				atoms("b"),
-				atoms("a")
+				Atomics.state("b", "a"),
+				Atomics.state("b"),
+				Atomics.state("a")
 			))).isTrue();
 
 			assertThat(aAndThenB.validate(LTLTrace.of(
-				atoms("b"),
-				atoms("b"),
-				atoms("a")
+				Atomics.state("b"),
+				Atomics.state("b"),
+				Atomics.state("a")
 			))).isFalse();
 
 			assertThat(aAndThenB.validate(LTLTrace.of(
-				atoms("a", "b"),
-				atoms("a"),
-				atoms("b")
+				Atomics.state("a", "b"),
+				Atomics.state("a"),
+				Atomics.state("b")
 			))).isFalse();
 		}
 
@@ -184,31 +183,31 @@ class FormulaValidationTests {
 
 		@Example
 		void factOrFact() {
-			LTLFormula<Set<String>> aOrB = AtomicFact.fact("a").or(AtomicFact.fact("b"));
-			assertThat(aOrB.validate(atoms("b", "x"))).isTrue();
-			assertThat(aOrB.validate(atoms("y", "x"))).isFalse();
+			LTLFormula<Set<String>> aOrB = Atomics.fact("a").or(Atomics.fact("b"));
+			assertThat(aOrB.validate(Atomics.state("b", "x"))).isTrue();
+			assertThat(aOrB.validate(Atomics.state("y", "x"))).isFalse();
 		}
 
 		@Example
 		void factOrNext() {
-			LTLFormula<Set<String>> aOrNextB = AtomicFact.fact("a").or(next(AtomicFact.fact("b")));
+			LTLFormula<Set<String>> aOrNextB = Atomics.fact("a").or(next(Atomics.fact("b")));
 
 			assertThat(aOrNextB.validate(LTLTrace.of(
-				atoms("b", "a"),
-				atoms("c"),
-				atoms("a")
+				Atomics.state("b", "a"),
+				Atomics.state("c"),
+				Atomics.state("a")
 			))).isTrue();
 
 			assertThat(aOrNextB.validate(LTLTrace.of(
-				atoms("b"),
-				atoms("b"),
-				atoms("x")
+				Atomics.state("b"),
+				Atomics.state("b"),
+				Atomics.state("x")
 			))).isTrue();
 
 			assertThat(aOrNextB.validate(LTLTrace.of(
-				atoms("b"),
-				atoms("a"),
-				atoms("c")
+				Atomics.state("b"),
+				Atomics.state("a"),
+				Atomics.state("c")
 			))).isFalse();
 		}
 	}
@@ -218,32 +217,32 @@ class FormulaValidationTests {
 
 		@Example
 		void factImpliesFact() {
-			LTLFormula<Set<String>> aImpliesB = AtomicFact.fact("a").implies(AtomicFact.fact("b"));
-			assertThat(aImpliesB.validate(atoms("c", "x"))).isTrue();
-			assertThat(aImpliesB.validate(atoms("a", "x", "b"))).isTrue();
-			assertThat(aImpliesB.validate(atoms("a"))).isFalse();
+			LTLFormula<Set<String>> aImpliesB = Atomics.fact("a").implies(Atomics.fact("b"));
+			assertThat(aImpliesB.validate(Atomics.state("c", "x"))).isTrue();
+			assertThat(aImpliesB.validate(Atomics.state("a", "x", "b"))).isTrue();
+			assertThat(aImpliesB.validate(Atomics.state("a"))).isFalse();
 		}
 
 		@Example
 		void factImpliesNext() {
-			LTLFormula<Set<String>> aImpliesNextB = AtomicFact.fact("a").implies(next(AtomicFact.fact("b")));
+			LTLFormula<Set<String>> aImpliesNextB = Atomics.fact("a").implies(next(Atomics.fact("b")));
 
 			assertThat(aImpliesNextB.validate(LTLTrace.of(
-				atoms("c"),
-				atoms("c", "a"),
-				atoms("b")
+				Atomics.state("c"),
+				Atomics.state("c", "a"),
+				Atomics.state("b")
 			))).isTrue();
 
 			assertThat(aImpliesNextB.validate(LTLTrace.of(
-				atoms("a"),
-				atoms("b", "a"),
-				atoms("b")
+				Atomics.state("a"),
+				Atomics.state("b", "a"),
+				Atomics.state("b")
 			))).isTrue();
 
 			assertThat(aImpliesNextB.validate(LTLTrace.of(
-				atoms("a"),
-				atoms("a"),
-				atoms("b")
+				Atomics.state("a"),
+				Atomics.state("a"),
+				Atomics.state("b")
 			))).isFalse();
 		}
 
@@ -254,11 +253,11 @@ class FormulaValidationTests {
 
 		@Example
 		void matches() {
-			var next = next(AtomicFact.fact("a"));
+			var next = next(Atomics.fact("a"));
 			boolean matches = next.validate(LTLTrace.of(
-				atoms("c"),
-				atoms("a", "b"),
-				atoms("b")
+				Atomics.state("c"),
+				Atomics.state("a", "b"),
+				Atomics.state("b")
 			));
 
 			assertThat(matches).isTrue();
@@ -266,12 +265,12 @@ class FormulaValidationTests {
 
 		@Example
 		void doesNotMatch() {
-			var next = next(AtomicFact.fact("b"));
+			var next = next(Atomics.fact("b"));
 
 			assertThat(next.validate(LTLTrace.of(
-				atoms("a", "b", "c"),
-				atoms("a"),
-				atoms("a", "b")
+				Atomics.state("a", "b", "c"),
+				Atomics.state("a"),
+				Atomics.state("a", "b")
 			))).isFalse();
 
 			assertThat(next.validate(LTLTrace.of())).isFalse();
@@ -279,49 +278,49 @@ class FormulaValidationTests {
 
 		@Example
 		void withNesting() {
-			var next = next(always(AtomicFact.fact("a")));
+			var next = next(always(Atomics.fact("a")));
 
 			assertThat(next.validate(LTLTrace.of(
-				atoms("c"),
-				atoms("a", "b"),
-				atoms("a")
+				Atomics.state("c"),
+				Atomics.state("a", "b"),
+				Atomics.state("a")
 			))).isTrue();
 
 			assertThat(next.validate(LTLTrace.of(
-				atoms("c"),
-				atoms("a", "b"),
-				atoms("b")
+				Atomics.state("c"),
+				Atomics.state("a", "b"),
+				Atomics.state("b")
 			))).isFalse();
 		}
 
 		@Example
 		void withPrecondition() {
-			var ifPreThenNext = AtomicFact.fact("pre").implies(next(AtomicFact.fact("next")));
+			var ifPreThenNext = Atomics.fact("pre").implies(next(Atomics.fact("next")));
 
 			assertThat(ifPreThenNext.validate(LTLTrace.of(
-				atoms("pre"),
-				atoms("a", "next"),
-				atoms("a")
+				Atomics.state("pre"),
+				Atomics.state("a", "next"),
+				Atomics.state("a")
 			))).isTrue();
 
 			assertThat(ifPreThenNext.validate(LTLTrace.of(
-				atoms("a"),
-				atoms("a")
+				Atomics.state("a"),
+				Atomics.state("a")
 			))).isTrue();
 
 			assertThat(ifPreThenNext.validate(LTLTrace.of(
-				atoms("pre"),
-				atoms("a")
+				Atomics.state("pre"),
+				Atomics.state("a")
 			))).isFalse();
 
 			assertThat(ifPreThenNext.validate(LTLTrace.of(
-				atoms("pre")
+				Atomics.state("pre")
 			))).isFalse();
 
 			assertThat(always(ifPreThenNext).validate(LTLTrace.of(
-				atoms("pre"),
-				atoms("a", "next", "pre"),
-				atoms("a")
+				Atomics.state("pre"),
+				Atomics.state("a", "next", "pre"),
+				Atomics.state("a")
 			))).isFalse();
 		}
 
@@ -332,33 +331,33 @@ class FormulaValidationTests {
 
 		@Example
 		void matches() {
-			var eventually = eventually(AtomicFact.fact("a"));
+			var eventually = eventually(Atomics.fact("a"));
 
 			assertThat(eventually.validate(LTLTrace.of(
-				atoms("c"),
-				atoms("a", "b"),
-				atoms("b")
+				Atomics.state("c"),
+				Atomics.state("a", "b"),
+				Atomics.state("b")
 			))).isTrue();
 
 			assertThat(eventually.validate(LTLTrace.of(
-				atoms("c"),
-				atoms("c"),
-				atoms(),
-				atoms("c"),
-				atoms(),
-				atoms("a", "b")
+				Atomics.state("c"),
+				Atomics.state("c"),
+				Atomics.state(),
+				Atomics.state("c"),
+				Atomics.state(),
+				Atomics.state("a", "b")
 			))).isTrue();
 		}
 
 		@Example
 		void doesNotMatch() {
-			var eventually = eventually(AtomicFact.fact("a"));
+			var eventually = eventually(Atomics.fact("a"));
 
 			assertThat(eventually.validate(LTLTrace.of(
-				atoms("c"),
-				atoms("b"),
-				atoms(),
-				atoms("b")
+				Atomics.state("c"),
+				Atomics.state("b"),
+				Atomics.state(),
+				Atomics.state("b")
 			))).isFalse();
 
 			assertThat(eventually.validate(LTLTrace.of())).isFalse();
@@ -366,20 +365,20 @@ class FormulaValidationTests {
 
 		@Example
 		void nested() {
-			var eventually = eventually(always(AtomicFact.fact("a")));
+			var eventually = eventually(always(Atomics.fact("a")));
 
 			assertThat(eventually.validate(LTLTrace.of(
-				atoms("c"),
-				atoms(),
-				atoms("a", "b"),
-				atoms("a")
+				Atomics.state("c"),
+				Atomics.state(),
+				Atomics.state("a", "b"),
+				Atomics.state("a")
 			))).isTrue();
 
 			assertThat(eventually.validate(LTLTrace.of(
-				atoms("c"),
-				atoms("a", "b"),
-				atoms("a"),
-				atoms()
+				Atomics.state("c"),
+				Atomics.state("a", "b"),
+				Atomics.state("a"),
+				Atomics.state()
 			))).isFalse();
 		}
 
@@ -390,11 +389,11 @@ class FormulaValidationTests {
 
 		@Example
 		void matches() {
-			var always = always(AtomicFact.fact("a"));
+			var always = always(Atomics.fact("a"));
 			boolean matches = always.validate(LTLTrace.of(
-				atoms("a", "b", "c"),
-				atoms("a", "b"),
-				atoms("a")
+				Atomics.state("a", "b", "c"),
+				Atomics.state("a", "b"),
+				Atomics.state("a")
 			));
 
 			assertThat(matches).isTrue();
@@ -402,11 +401,11 @@ class FormulaValidationTests {
 
 		@Example
 		void doesNotMatch() {
-			var always = always(AtomicFact.fact("b"));
+			var always = always(Atomics.fact("b"));
 			boolean matches = always.validate(LTLTrace.of(
-				atoms("a", "b", "c"),
-				atoms("a", "b"),
-				atoms("a")
+				Atomics.state("a", "b", "c"),
+				Atomics.state("a", "b"),
+				Atomics.state("a")
 			));
 
 			assertThat(matches).isFalse();
@@ -414,11 +413,11 @@ class FormulaValidationTests {
 
 		@Example
 		void nested() {
-			var always = always(always(AtomicFact.fact("a")));
+			var always = always(always(Atomics.fact("a")));
 			boolean matches = always.validate(LTLTrace.of(
-				atoms("a", "b", "c"),
-				atoms("a", "b"),
-				atoms("a")
+				Atomics.state("a", "b", "c"),
+				Atomics.state("a", "b"),
+				Atomics.state("a")
 			));
 
 			assertThat(matches).isTrue();

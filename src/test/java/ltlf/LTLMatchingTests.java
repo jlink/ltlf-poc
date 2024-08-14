@@ -5,7 +5,6 @@ import java.util.*;
 import net.jqwik.api.*;
 
 import static ltlf.LTLFormula.*;
-import static ltlf.LTLState.*;
 import static org.assertj.core.api.Assertions.*;
 
 class LTLMatchingTests {
@@ -15,9 +14,9 @@ class LTLMatchingTests {
 		LTL<Set<String>> ltl = new LTL<>();
 
 		assertThat(ltl.matches(
-			atoms("a", "b", "c"),
-			atoms("a", "b"),
-			atoms("a")
+			Atomics.state("a", "b", "c"),
+			Atomics.state("a", "b"),
+			Atomics.state("a")
 		)).isTrue();
 
 		assertThat(ltl.matches()).isTrue();
@@ -27,10 +26,10 @@ class LTLMatchingTests {
 	void alwaysMatches() {
 		LTL<Set<String>> ltl = new LTL<>();
 		ltl.addFormula(
-			always(AtomicFact.fact("a"))
+			always(Atomics.fact("a"))
 		);
 
-		assertThat(ltl.matches(atoms("a"), atoms("a", "b"))).isTrue();
+		assertThat(ltl.matches(Atomics.state("a"), Atomics.state("a", "b"))).isTrue();
 		assertThat(ltl.matches()).isTrue();
 	}
 
@@ -38,50 +37,50 @@ class LTLMatchingTests {
 	void alwaysDoesNotMatch() {
 		LTL<Set<String>> ltl = new LTL<>();
 		ltl.addFormula(
-			always(AtomicFact.fact("b"))
+			always(Atomics.fact("b"))
 		);
 
-		boolean matches = ltl.matches(atoms("a", "b", "c"), atoms("a"));
+		boolean matches = ltl.matches(Atomics.state("a", "b", "c"), Atomics.state("a"));
 		assertThat(matches).isFalse();
 	}
 
 	@Example
 	void matchSeveralFormulae() {
 		LTL<Set<String>> ltl = new LTL<>();
-		ltl.addFormula(always(AtomicFact.fact("a")));
-		ltl.addFormula(AtomicFact.fact("b"));
-		ltl.addFormula(eventually(AtomicFact.fact("c")));
+		ltl.addFormula(always(Atomics.fact("a")));
+		ltl.addFormula(Atomics.fact("b"));
+		ltl.addFormula(eventually(Atomics.fact("c")));
 
 		assertThat(ltl.matches(
-			atoms("a", "b"),
-			atoms("a"),
-			atoms("a"),
-			atoms("c", "a"),
-			atoms("a")
+			Atomics.state("a", "b"),
+			Atomics.state("a"),
+			Atomics.state("a"),
+			Atomics.state("c", "a"),
+			Atomics.state("a")
 		)).isTrue();
 
 		assertThat(ltl.matches(
-			atoms("a"),
-			atoms("a"),
-			atoms("a"),
-			atoms("c", "a"),
-			atoms("a")
+			Atomics.state("a"),
+			Atomics.state("a"),
+			Atomics.state("a"),
+			Atomics.state("c", "a"),
+			Atomics.state("a")
 		)).isFalse();
 
 		assertThat(ltl.matches(
-			atoms("b"),
-			atoms("a"),
-			atoms("a"),
-			atoms("c", "a"),
-			atoms("a")
+			Atomics.state("b"),
+			Atomics.state("a"),
+			Atomics.state("a"),
+			Atomics.state("c", "a"),
+			Atomics.state("a")
 		)).isFalse();
 
 		assertThat(ltl.matches(
-			atoms("a", "b"),
-			atoms("a"),
-			atoms("a"),
-			atoms("a"),
-			atoms("a")
+			Atomics.state("a", "b"),
+			Atomics.state("a"),
+			Atomics.state("a"),
+			Atomics.state("a"),
+			Atomics.state("a")
 		)).isFalse();
 	}
 

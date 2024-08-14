@@ -28,33 +28,33 @@ public interface LTLFormula<S> {
 		return new Until<>(this, condition);
 	}
 
-	static <S> LTLFormula<S> not(LTLFormula<S> checker) {
-		return checker.negate();
+	static <S> LTLFormula<S> not(LTLFormula<S> formula) {
+		return formula.negate();
 	}
 
-	static <S> LTLFormula<S> always(LTLFormula<S> checker) {
-		return new Always<>(checker);
+	static <S> LTLFormula<S> always(LTLFormula<S> formula) {
+		return new Always<>(formula);
 	}
 
-	static <S> LTLFormula<S> next(LTLFormula<S> checker) {
+	static <S> LTLFormula<S> next(LTLFormula<S> formula) {
 		return trace -> {
 			if (trace.isEmpty()) {
 				return false;
 			}
-			return checker.validate(trace.rest());
+			return formula.validate(trace.rest());
 		};
 	}
 
-	static <S> LTLFormula<S> eventually(LTLFormula<S> checker) {
-		return new Eventually<>(checker);
+	static <S> LTLFormula<S> eventually(LTLFormula<S> formula) {
+		return new Eventually<>(formula);
 	}
 
-	static <S> LTLFormula<S> last(LTLFormula<S> checker) {
+	static <S> LTLFormula<S> last(LTLFormula<S> formula) {
 		return trace -> {
 			if (trace.isEmpty()) {
 				return false;
 			}
-			return checker.validate(trace.getLast());
+			return formula.validate(trace.getLast());
 		};
 	}
 
@@ -73,17 +73,17 @@ public interface LTLFormula<S> {
 	}
 
 	class Eventually<S> implements LTLFormula<S> {
-		private final LTLFormula<S> checker;
+		private final LTLFormula<S> formula;
 
-		public Eventually(LTLFormula<S> checker) {
-			this.checker = checker;
+		public Eventually(LTLFormula<S> formula) {
+			this.formula = formula;
 		}
 
 		@Override
 		public boolean validate(LTLTrace<S> trace) {
 			LTLTrace<S> current = trace;
 			while (!current.isEmpty()) {
-				if (checker.validate(current)) {
+				if (formula.validate(current)) {
 					return true;
 				}
 				current = current.rest();
@@ -93,17 +93,17 @@ public interface LTLFormula<S> {
 	}
 
 	class Always<S> implements LTLFormula<S> {
-		private final LTLFormula<S> checker;
+		private final LTLFormula<S> formula;
 
-		public Always(LTLFormula<S> checker) {
-			this.checker = checker;
+		public Always(LTLFormula<S> formula) {
+			this.formula = formula;
 		}
 
 		@Override
 		public boolean validate(LTLTrace<S> trace) {
 			LTLTrace<S> current = trace;
 			while (!current.isEmpty()) {
-				if (!checker.validate(current)) {
+				if (!formula.validate(current)) {
 					return false;
 				}
 				current = current.rest();
