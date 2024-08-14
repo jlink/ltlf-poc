@@ -1,34 +1,42 @@
 package ltlf;
 
-public interface LTLFormula {
+public interface LTLFormula<S> {
 
-	boolean validate(LTLTrace trace);
+	boolean validate(LTLTrace<S> trace);
 
-	default boolean validate(LTLState state) {
+	default boolean validate(LTLState<S> state) {
 		return validate(LTLTrace.of(state));
 	}
 
-	default LTLFormula and(LTLFormula other) {
+	default LTLFormula<S> and(LTLFormula<S> other) {
 		return state -> validate(state) && other.validate(state);
 	}
 
-	default LTLFormula or(LTLFormula other) {
+	default LTLFormula<S> or(LTLFormula<S> other) {
 		return state -> validate(state) || other.validate(state);
 	}
 
-	default LTLFormula implies(LTLFormula other) {
+	default LTLFormula<S> implies(LTLFormula<S> other) {
 		return state -> !validate(state) || other.validate(state);
 	}
 
-	static LTLFormula not(LTLFormula checker) {
-		return state -> !checker.validate(state);
+	default LTLFormula<S> negate() {
+		return state -> !this.validate(state);
 	}
 
-	static LTLFormula always(LTLFormula checker) {
-		return new Always(checker);
+	default LTLFormula<S> until(LTLFormula<S> condition) {
+		return new Until<>(this, condition);
 	}
 
-	static LTLFormula next(LTLFormula checker) {
+	static <S> LTLFormula<S> not(LTLFormula<S> checker) {
+		return checker.negate();
+	}
+
+	static <S> LTLFormula<S> always(LTLFormula<S> checker) {
+		return new Always<>(checker);
+	}
+
+	static <S> LTLFormula<S> next(LTLFormula<S> checker) {
 		return trace -> {
 			if (trace.isEmpty()) {
 				return false;
@@ -37,11 +45,11 @@ public interface LTLFormula {
 		};
 	}
 
-	static LTLFormula eventually(LTLFormula checker) {
-		return new Eventually(checker);
+	static <S> LTLFormula<S> eventually(LTLFormula<S> checker) {
+		return new Eventually<>(checker);
 	}
 
-	static LTLFormula last(LTLFormula checker) {
+	static <S> LTLFormula<S> last(LTLFormula<S> checker) {
 		return trace -> {
 			if (trace.isEmpty()) {
 				return false;
@@ -50,83 +58,76 @@ public interface LTLFormula {
 		};
 	}
 
-	default LTLFormula until(LTLFormula condition) {
-		return new Until(this, condition);
-	}
-
-	interface Fact<S> extends LTLFormula {
+	@FunctionalInterface
+	interface Fact<S> extends LTLFormula<S> {
 
 		boolean check(LTLState<S> state);
 
-		default boolean validate(LTLTrace trace) {
+		default boolean validate(LTLTrace<S> trace) {
 			if (trace.isEmpty()) {
 				return false;
 			}
-			LTLState<S> first = (LTLState<S>) trace.states().getFirst();
+			LTLState<S> first = trace.states().getFirst();
 			return check(first);
 		}
-
-
 	}
 
-	class Eventually implements LTLFormula {
-		private final LTLFormula checker;
+	class Eventually<S> implements LTLFormula<S> {
+		private final LTLFormula<S> checker;
 
-		public Eventually(LTLFormula checker) {
+		public Eventually(LTLFormula<S> checker) {
 			this.checker = checker;
 		}
 
 		@Override
-		public boolean validate(LTLTrace trace) {
-			LTLTrace current = trace;
+		public boolean validate(LTLTrace<S> trace) {
+			LTLTrace<S> current = trace;
 			while (!current.isEmpty()) {
 				if (checker.validate(current)) {
 					return true;
 				}
 				current = current.rest();
 			}
-
 			return false;
 		}
 	}
 
-	class Always implements LTLFormula {
-		private final LTLFormula checker;
+	class Always<S> implements LTLFormula<S> {
+		private final LTLFormula<S> checker;
 
-		public Always(LTLFormula checker) {
+		public Always(LTLFormula<S> checker) {
 			this.checker = checker;
 		}
 
 		@Override
-		public boolean validate(LTLTrace trace) {
-			LTLTrace current = trace;
+		public boolean validate(LTLTrace<S> trace) {
+			LTLTrace<S> current = trace;
 			while (!current.isEmpty()) {
 				if (!checker.validate(current)) {
 					return false;
 				}
 				current = current.rest();
 			}
-
 			return true;
 		}
 	}
 
-	class Until implements LTLFormula {
-		private final LTLFormula hold;
-		private final LTLFormula until;
+	class Until<S> implements LTLFormula<S> {
+		private final LTLFormula<S> hold;
+		private final LTLFormula<S> until;
 
-		public Until(LTLFormula hold, LTLFormula until) {
+		public Until(LTLFormula<S> hold, LTLFormula<S> until) {
 			this.hold = hold;
 			this.until = until;
 		}
 
 		@Override
-		public boolean validate(LTLTrace trace) {
+		public boolean validate(LTLTrace<S> trace) {
 			if (trace.isEmpty() || !hold.validate(trace)) {
 				return false;
 			}
 
-			LTLTrace rest = trace.rest();
+			LTLTrace<S> rest = trace.rest();
 			return rest.isEmpty()
 					   || until.validate(rest)
 					   || validate(rest);

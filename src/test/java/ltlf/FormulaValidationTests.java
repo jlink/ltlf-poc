@@ -1,5 +1,7 @@
 package ltlf;
 
+import java.util.*;
+
 import net.jqwik.api.*;
 
 import static ltlf.LTLFormula.not;
@@ -37,7 +39,7 @@ class FormulaValidationTests {
 
 		@Example
 		void holds() {
-			LTLFormula aUntilB = AtomicFact.fact("a").until(AtomicFact.fact("b"));
+			LTLFormula<Set<String>> aUntilB = AtomicFact.fact("a").until(AtomicFact.fact("b"));
 
 			assertThat(aUntilB.validate(LTLTrace.of(
 				atoms("a"),
@@ -78,7 +80,7 @@ class FormulaValidationTests {
 
 		@Example
 		void doesNotHold() {
-			LTLFormula aUntilB = AtomicFact.fact("a").until(AtomicFact.fact("b"));
+			LTLFormula<Set<String>> aUntilB = AtomicFact.fact("a").until(AtomicFact.fact("b"));
 
 			assertThat(aUntilB.validate(LTLTrace.of(
 				atoms("a"),
@@ -107,14 +109,14 @@ class FormulaValidationTests {
 
 		@Example
 		void notAFact() {
-			LTLFormula notA = not(AtomicFact.fact("a"));
+			LTLFormula<Set<String>> notA = not(AtomicFact.fact("a"));
 			assertThat(notA.validate(atoms("b", "c"))).isTrue();
 			assertThat(notA.validate(atoms("b", "a"))).isFalse();
 		}
 
 		@Example
 		void notAlways() {
-			LTLFormula notAlwaysA = not(always(AtomicFact.fact("a")));
+			LTLFormula<Set<String>> notAlwaysA = not(always(AtomicFact.fact("a")));
 			assertThat(notAlwaysA.validate(LTLTrace.of(
 				atoms("b", "a"),
 				atoms("b", "c")
@@ -128,7 +130,7 @@ class FormulaValidationTests {
 
 		@Example
 		void notNext() {
-			LTLFormula notNext = not(next(AtomicFact.fact("a")));
+			LTLFormula<Set<String>> notNext = not(next(AtomicFact.fact("a")));
 			assertThat(notNext.validate(LTLTrace.of(
 				atoms("b", "a"),
 				atoms("b", "c")
@@ -147,14 +149,14 @@ class FormulaValidationTests {
 
 		@Example
 		void factAndFact() {
-			LTLFormula aAndB = AtomicFact.fact("a").and(AtomicFact.fact("b"));
+			LTLFormula<Set<String>> aAndB = AtomicFact.fact("a").and(AtomicFact.fact("b"));
 			assertThat(aAndB.validate(atoms("b", "a"))).isTrue();
 			assertThat(aAndB.validate(atoms("b", "x"))).isFalse();
 		}
 
 		@Example
 		void factAndNext() {
-			LTLFormula aAndThenB = AtomicFact.fact("a").and(next(AtomicFact.fact("b")));
+			LTLFormula<Set<String>> aAndThenB = AtomicFact.fact("a").and(next(AtomicFact.fact("b")));
 
 			assertThat(aAndThenB.validate(LTLTrace.of(
 				atoms("b", "a"),
@@ -182,14 +184,14 @@ class FormulaValidationTests {
 
 		@Example
 		void factOrFact() {
-			LTLFormula aOrB = AtomicFact.fact("a").or(AtomicFact.fact("b"));
+			LTLFormula<Set<String>> aOrB = AtomicFact.fact("a").or(AtomicFact.fact("b"));
 			assertThat(aOrB.validate(atoms("b", "x"))).isTrue();
 			assertThat(aOrB.validate(atoms("y", "x"))).isFalse();
 		}
 
 		@Example
 		void factOrNext() {
-			LTLFormula aOrNextB = AtomicFact.fact("a").or(next(AtomicFact.fact("b")));
+			LTLFormula<Set<String>> aOrNextB = AtomicFact.fact("a").or(next(AtomicFact.fact("b")));
 
 			assertThat(aOrNextB.validate(LTLTrace.of(
 				atoms("b", "a"),
@@ -216,7 +218,7 @@ class FormulaValidationTests {
 
 		@Example
 		void factImpliesFact() {
-			LTLFormula aImpliesB = AtomicFact.fact("a").implies(AtomicFact.fact("b"));
+			LTLFormula<Set<String>> aImpliesB = AtomicFact.fact("a").implies(AtomicFact.fact("b"));
 			assertThat(aImpliesB.validate(atoms("c", "x"))).isTrue();
 			assertThat(aImpliesB.validate(atoms("a", "x", "b"))).isTrue();
 			assertThat(aImpliesB.validate(atoms("a"))).isFalse();
@@ -224,7 +226,7 @@ class FormulaValidationTests {
 
 		@Example
 		void factImpliesNext() {
-			LTLFormula aImpliesNextB = AtomicFact.fact("a").implies(next(AtomicFact.fact("b")));
+			LTLFormula<Set<String>> aImpliesNextB = AtomicFact.fact("a").implies(next(AtomicFact.fact("b")));
 
 			assertThat(aImpliesNextB.validate(LTLTrace.of(
 				atoms("c"),

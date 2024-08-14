@@ -4,7 +4,7 @@ import java.util.*;
 
 public record AtomicFact(String atom) implements LTLFormula.Fact<Set<String>> {
 
-	public static LTLFormula fact(String atom) {
+	public static LTLFormula<Set<String>> fact(String atom) {
 		return new AtomicFact(atom);
 	}
 
