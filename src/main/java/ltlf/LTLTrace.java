@@ -1,8 +1,14 @@
 package ltlf;
 
 import java.util.*;
+import java.util.function.*;
 
 public record LTLTrace<S>(List<LTLState<S>> states) {
+
+
+	public static <S> LTLTrace<S> with(S initialState) {
+		return of(new LTLState<>(initialState));
+	}
 
 	@SafeVarargs
 	public static <S> LTLTrace<S> of(S ... states) {
@@ -28,5 +34,11 @@ public record LTLTrace<S>(List<LTLState<S>> states) {
 
 	public LTLState<S> getLast() {
 		return states.getLast();
+	}
+
+	public LTLTrace<S> next(Function<S, S> transition) {
+		List<LTLState<S>> nextStates = new ArrayList<>(states);
+		nextStates.add(new LTLState<>(transition.apply(getLast().state())));
+		return new LTLTrace<>(nextStates);
 	}
 }

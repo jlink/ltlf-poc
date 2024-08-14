@@ -19,7 +19,7 @@ The goal is to eventually provide something like [Quickstrom](https://quickstrom
 - [x] until
 - [x] last
 - [ ] Make all formulae describe itself in toString()
-- [ ] Make LTLFormula generic (by any state type)
+- [x] Make LTLFormula generic (by any state type)
 - [ ] Property-based tests for LTL
 - [ ] Provide mismatching details in case of failed match
 - [ ] Allow to switch between finite and infinite semantics
