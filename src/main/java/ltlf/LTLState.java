@@ -2,11 +2,10 @@ package ltlf;
 
 import java.util.*;
 
-public class LTLState {
-	private final Set<String> atoms;
+public record LTLState<S>(S state) {
 
-	public static LTLState atoms(String ... atoms) {
-		return new LTLState(normalize(atoms));
+	public static LTLState<Set<String>> atoms(String ... atoms) {
+		return new LTLState<>(normalize(atoms));
 	}
 
 	private static Set<String> normalize(String[] atoms) {
@@ -17,16 +16,8 @@ public class LTLState {
 		return normalized;
 	}
 
-	private LTLState(Set<String> atoms) {
-		this.atoms = atoms;
-	}
-
-	public boolean contains(String atom) {
-		return atoms.contains(atom);
-	}
-
 	@Override
 	public String toString() {
-		return atoms.toString();
+		return state.toString();
 	}
 }

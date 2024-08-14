@@ -25,7 +25,7 @@ class LTLMatchingTests {
 	void alwaysMatches() {
 		LTL ltl = new LTL();
 		ltl.addFormula(
-			always(fact("a"))
+			always(AtomicFact.fact("a"))
 		);
 
 		assertThat(ltl.matches(atoms("a"), atoms("a", "b"))).isTrue();
@@ -36,7 +36,7 @@ class LTLMatchingTests {
 	void alwaysDoesNotMatch() {
 		LTL ltl = new LTL();
 		ltl.addFormula(
-			always(fact("b"))
+			always(AtomicFact.fact("b"))
 		);
 
 		boolean matches = ltl.matches(atoms("a", "b", "c"), atoms("a"));
@@ -46,9 +46,9 @@ class LTLMatchingTests {
 	@Example
 	void matchSeveralFormulae() {
 		LTL ltl = new LTL();
-		ltl.addFormula(always(fact("a")));
-		ltl.addFormula(fact("b"));
-		ltl.addFormula(eventually(fact("c")));
+		ltl.addFormula(always(AtomicFact.fact("a")));
+		ltl.addFormula(AtomicFact.fact("b"));
+		ltl.addFormula(eventually(AtomicFact.fact("c")));
 
 		assertThat(ltl.matches(
 			atoms("a", "b"),

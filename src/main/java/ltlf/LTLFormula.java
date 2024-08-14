@@ -20,10 +20,6 @@ public interface LTLFormula {
 		return state -> !validate(state) || other.validate(state);
 	}
 
-	static LTLFormula fact(String a) {
-		return new Fact(a);
-	}
-
 	static LTLFormula not(LTLFormula checker) {
 		return state -> !checker.validate(state);
 	}
@@ -58,21 +54,19 @@ public interface LTLFormula {
 		return new Until(this, condition);
 	}
 
-	class Fact implements LTLFormula {
-		private final String atom;
+	interface Fact<S> extends LTLFormula {
 
-		public Fact(String atom) {
-			this.atom = atom.trim().toLowerCase();
-		}
+		boolean check(LTLState<S> state);
 
-		@Override
-		public boolean validate(LTLTrace trace) {
+		default boolean validate(LTLTrace trace) {
 			if (trace.isEmpty()) {
 				return false;
 			}
-			var first = trace.states().getFirst();
-			return first.contains(atom);
+			LTLState<S> first = (LTLState<S>) trace.states().getFirst();
+			return check(first);
 		}
+
+
 	}
 
 	class Eventually implements LTLFormula {
